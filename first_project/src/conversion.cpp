@@ -80,7 +80,6 @@ void conversion::chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg){
 
 void conversion::broadcastTf(){
   tf::Transform transform;
-
   transform.setOrigin( tf::Vector3(xEast/100, yNorth/100, zUp/100) );
   tf::Quaternion q;
   q.setRPY(0, 0, 0);
