@@ -8,12 +8,15 @@
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>  
 
-class conversion{
+class converter{
 public:
 
-	conversion(std::string path,std::string object);
+	converter(std::string path,std::string object);
 
 	void chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg);
+       
+	void initParam(std::string pubTopic);
+	void startPubAndSub(std::string path);
 
 private:
 
@@ -21,12 +24,15 @@ private:
   	tf::TransformBroadcaster br;
   	ros::Subscriber sub;
 	ros::Publisher pub_conv;
+	ros::Time timeCallBack;
  	float latitude_init, longitude_init, h0;
   	float xEast, yNorth, zUp;
-  	std::string object;
+  	std::string pubTopic;
 
+	void checkIfMessageIsPublished();
 	void broadcastTf();
 	void publishOdom();
+	void publishNan();
 };
 
 #endif

@@ -20,7 +20,7 @@ void distance(const nav_msgs::OdometryConstPtr& msg1, const nav_msgs::OdometryCo
 
  // ROS_INFO("x1,y1,z1 ->%f,%f,%f || x2,y2,z2 ->%f,%f,%f",x1,y1,z1,x2,y2,z2);
   distanza = sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)) + ((z1 - z2) * (z1 - z2)));
-// ROS_INFO("DIST: %f",distanza);
+  ROS_INFO("DIST: %f",distanza);
 }
 
 bool calculate(first_project::distance_calculate::Request &req, first_project::distance_calculate::Response &res)

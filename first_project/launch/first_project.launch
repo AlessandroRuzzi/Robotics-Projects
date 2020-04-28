@@ -2,12 +2,16 @@
 
 	<param name="latitude_init" value="45.6311926152"/>
 	<param name="longitude_init" value="9.2947495255"/>
-	<param name="h0" value="231.506675163"/>	
-        <param name="safe" value="5.0"/>
-	<param name="crash" value="1.0"/>
-	<node pkg="first_project" name="front_converter" type="conversion" output="screen" args = "front"
+	<param name="h0" value="231.506675163"/>
+	
+        <param name="minSafe" value="5.0"/>
+	<param name="minUnSafe" value="1.0"/>
+	<param name="minCrash" value="0.0"/>
+
+
+	<node pkg="first_project" name="front_converter" type="converter" output="screen" args = "front"
 	/>
-	<node pkg="first_project" name="obs_converter" type="conversion" output="screen" args = "obs">
+	<node pkg="first_project" name="obs_converter" type="converter" output="screen" args = "obs">
 	<remap from ="/swiftnav/front/gps_pose"  to="/swiftnav/obs/gps_pose"/>
 	</node>
 

@@ -1,67 +1,77 @@
-#include <conversion.h>
-#include "first_project/distance_calculate.h"
-#include "first_project/dist.h"
-#include <dynamic_reconfigure/server.h>
-#include <first_project/flagConfig.h>
+#include <distance_publisher.h>
 
-double safe;
-double crash;
+distance_publisher::distance_publisher(){
+  startClient();
+  initParam();
+  startDynamicReconfigure(); 
+  startPublishing();
+}
 
-void callback(first_project::flagConfig &config, uint32_t level) {
-  ROS_INFO("Reconfigure Request: %lf %lf", 
-            config.crash,config.safe);
-            safe = config.safe;
-            crash = config.crash;
+
+void distance_publisher::startClient(){
+  client = n.serviceClient<first_project::distance_calculate>("distance_calculator");
+  distPub = n.advertise<first_project::dist>("distance", 1000);
+}
+
+void distance_publisher::initParam(){
+  n.getParam("/minSafe",minSafe);
+  n.getParam("/minUnSafe",minUnSafe);
+  n.getParam("/minCrash",minCrash);
+}
+
+void distance_publisher::startDynamicReconfigure(){
+  f = boost::bind(&distance_publisher::reconfigureCallback,this, _1, _2);
+  server.setCallback(f);
+}
+
+void distance_publisher::startPublishing(){
+
+  ros::Rate loop_rate(10);
+  while(ros::ok()){
+    if(client.call(distance)){
+      first_project::dist msg;
+      msg.header.stamp = ros::Time::now();
+      msg.header.frame_id = "world";
+      msg.dist = (float) distance.response.dist;
+
+      if(msg.dist > minUnSafe && msg.dist < minSafe)
+        msg.flag = "UnSafe";
+      else if(msg.dist >= minSafe)
+        msg.flag = "Safe";
+      else if(msg.dist >= minCrash && msg.dist <= minUnSafe)
+        msg.flag = "Crash";
+     
+      distPub.publish(msg);
+    }
+    else{
+      ROS_INFO("Server Error");
+    }
+
+  loop_rate.sleep();
+  ros::spinOnce();  //vedere se si deve togliere
+  }
+}
+
+void distance_publisher::reconfigureCallback(first_project::flagConfig &config, uint32_t level) {
+  ROS_INFO("Reconfigure Request(min UnSafe, min Safe): %lf %lf", 
+            config.minUnSafe,config.minSafe);
+            minSafe = config.minSafe;
+            minUnSafe = config.minUnSafe;
             ROS_INFO ("%d",level);
 }
 
+
+
 int main(int argc, char **argv)
 {
- ros::init(argc, argv, "subscribe_and_publish");
- ros::NodeHandle n;
- ros::ServiceClient client = n.serviceClient<first_project::distance_calculate>("distance_calculator");
- ros::Publisher dist_pub = n.advertise<first_project::dist>("distance", 1000);
- //conversion conversion_obs("/swiftnav/obs/gps_pose", "obs");
- //conversion conversion_front("/swiftnav/front/gps_pose", "front");
+   ros::init(argc, argv, "distance_publisher");
 
- n.getParam("/safe",safe);
- n.getParam("/crash",crash);
+   distance_publisher distance_publisher1;
 
- dynamic_reconfigure::Server<first_project::flagConfig> server;
- dynamic_reconfigure::Server<first_project::flagConfig>::CallbackType f;
-
- f = boost::bind(&callback, _1, _2);
- server.setCallback(f);
-
- ros::Rate loop_rate(10);
-
+   ros::spin();
  
- first_project::distance_calculate distance;
-
-while(ros::ok()){
- 
- if(client.call(distance)){
-     first_project::dist msg;
-     msg.header.stamp = ros::Time::now();
-     msg.header.frame_id = "world";
-     msg.dist = (float) distance.response.dist;
-
-     if(msg.dist > crash && msg.dist < safe)
-        msg.flag = "UnSafe";
-     else if(msg.dist >= safe)
-        msg.flag = "Safe";
-     else
-        msg.flag = "Crash";
-     
-     dist_pub.publish(msg); //inserire anche gli header nel message
+   return 0;
 }
- else{
-	ROS_INFO("i valori non vanno bene");
- }
 
- ros::spinOnce();
- loop_rate.sleep();
-}
- return 0;
-}
+
 

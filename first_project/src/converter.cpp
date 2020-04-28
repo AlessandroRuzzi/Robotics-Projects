@@ -1,15 +1,40 @@
-#include <conversion.h>
+#include <converter.h>
 
-	conversion::conversion(std::string path,std::string object){
-	this->object = object;
-	n.getParam("/longitude_init", longitude_init);
-	n.getParam("/latitude_init", latitude_init);
-	n.getParam("/h0", h0);
-	sub = n.subscribe(path, 1000, &conversion::chatterCallback, this);
-	pub_conv = n.advertise<nav_msgs::Odometry>(object, 1000);		
+converter::converter(std::string path,std::string pubTopic){
+  timeCallBack = ros::Time::now();
+  initParam(pubTopic);
+  startPubAndSub(path);
+  checkIfMessageIsPublished();
 }
 
-void conversion::chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg){
+void converter::initParam(std::string pubTopic){
+this->pubTopic = pubTopic;
+  n.getParam("/longitude_init", longitude_init);
+  n.getParam("/latitude_init", latitude_init);
+  n.getParam("/h0", h0);
+}
+
+void converter::startPubAndSub(std::string path){
+  sub = n.subscribe(path, 1000, &converter::chatterCallback, this);
+  pub_conv = n.advertise<nav_msgs::Odometry>(pubTopic, 1000);
+}
+
+void converter::checkIfMessageIsPublished(){
+  ros::Rate loop_rate(10);
+
+  ros::Time lastCallBack = timeCallBack;
+  while(ros::ok()){
+   
+   if(lastCallBack == timeCallBack)
+       publishNan();
+
+  lastCallBack = timeCallBack;
+  loop_rate.sleep();
+  ros::spinOnce();  //vedere se si può togliere
+  }
+}
+
+void converter::chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg){
   //ROS_INFO("Input position: [%f,%f, %f]", msg->latitude, msg->longitude,msg->altitude);
 
   // fixed values
@@ -78,17 +103,18 @@ void conversion::chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg){
 
 }
 
-void conversion::broadcastTf(){
+void converter::broadcastTf(){
   tf::Transform transform;
   transform.setOrigin( tf::Vector3(xEast/100, yNorth/100, zUp/100) );
   tf::Quaternion q;
   q.setRPY(0, 0, 0);
   transform.setRotation(q);
-  br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "odom", object)); 
+  br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "odom", pubTopic)); 
  
 }
 
-void conversion::publishOdom(){
+void converter::publishOdom(){
+  timeCallBack = ros::Time::now();
   nav_msgs::Odometry odom;
   odom.header.stamp = ros::Time::now();
   odom.header.frame_id = "odom";
@@ -97,18 +123,29 @@ void conversion::publishOdom(){
   odom.pose.pose.position.z = zUp;
   odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(0);
 
-
   pub_conv.publish(odom);
 }
 
+void converter::publishNan(){
+  nav_msgs::Odometry odom;
+  odom.header.stamp = ros::Time::now();
+  odom.header.frame_id = "odom";
+  odom.pose.pose.position.x = NAN;
+  odom.pose.pose.position.y = NAN;
+  odom.pose.pose.position.z = NAN;
+  odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(0);
+
+  pub_conv.publish(odom);
+
+}
 
 int main(int argc, char **argv){
   	
-	ros::init(argc, argv,"converter");
+  ros::init(argc, argv,"converter");
 
-  	conversion converter("/swiftnav/front/gps_pose",argv[1]);
+  converter converter1("/swiftnav/front/gps_pose",argv[1]);
 
-  	ros::spin();
+  ros::spin();
 
   return 0;
 }

@@ -32,11 +32,12 @@ catkin_package(CATKIN_DEPENDS message_runtime)
 ## Build talker and listener
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_executable(conversion src/conversion.cpp
-	       src/conversion.cpp include/conversion.h)
-target_link_libraries(conversion ${catkin_LIBRARIES})
+add_executable(converter src/converter.cpp
+	       src/converter.cpp include/converter.h)
+target_link_libraries(converter ${catkin_LIBRARIES})
 
-add_executable(distance_publisher src/distance_publisher.cpp)
+add_executable(distance_publisher src/distance_publisher.cpp
+		src/distance_publisher.cpp include/distance_publisher.h)
 add_dependencies(distance_publisher ${${PROJECT_NAME}_EXPORTE_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(distance_publisher custom_messages_generate_messages_cpp)
 add_dependencies(distance_publisher ${PROJECT_NAME}_generate_messages_cpp )
@@ -45,7 +46,8 @@ add_dependencies(distance_publisher ${PROJECT_NAME}_gencfg)
 target_link_libraries(distance_publisher ${catkin_LIBRARIES})
 
 
-add_executable(distance_calculator src/distance_calculator.cpp)
+add_executable(distance_calculator src/distance_calculator.cpp
+		)
 add_dependencies(distance_calculator ${${PROJECT_NAME}_EXPORTE_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(distance_calculator ${PROJECT_NAME}_generate_messages_cpp )
 target_link_libraries(distance_calculator ${catkin_LIBRARIES})
