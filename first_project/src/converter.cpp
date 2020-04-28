@@ -4,7 +4,7 @@ converter::converter(std::string path,std::string pubTopic){
   timeCallBack = ros::Time::now();
   initParam(pubTopic);
   startPubAndSub(path);
-  checkIfMessageIsPublished();
+  //checkIfMessageIsPublished();
 }
 
 void converter::initParam(std::string pubTopic){
@@ -30,7 +30,7 @@ void converter::checkIfMessageIsPublished(){
 
   lastCallBack = timeCallBack;
   loop_rate.sleep();
-  ros::spinOnce();  //vedere se si può togliere
+  ros::spinOnce();
   }
 }
 
@@ -38,6 +38,11 @@ void converter::chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg){
   //ROS_INFO("Input position: [%f,%f, %f]", msg->latitude, msg->longitude,msg->altitude);
 
   // fixed values
+
+  if(msg->latitude == 0 && msg->longitude == 0 && msg->altitude == 0){
+    publishNan();
+    return;
+}
 
   double a = 6378137;
   double b = 6356752.3142;

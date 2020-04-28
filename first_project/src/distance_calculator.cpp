@@ -7,10 +7,11 @@
 #include <message_filters/sync_policies/exact_time.h>
 #include <message_filters/sync_policies/approximate_time.h>
 
-float distanza =0;
+float distanza;
+bool isObsMoving = false;
 
 void distance(const nav_msgs::OdometryConstPtr& msg1, const nav_msgs::OdometryConstPtr& msg2){
-  
+  isObsMoving = true;
   float x1 = msg1->pose.pose.position.x;
   float y1 = msg1->pose.pose.position.y;
   float z1 = msg1->pose.pose.position.z;
@@ -24,8 +25,12 @@ void distance(const nav_msgs::OdometryConstPtr& msg1, const nav_msgs::OdometryCo
 }
 
 bool calculate(first_project::distance_calculate::Request &req, first_project::distance_calculate::Response &res)
-{
-  res.dist = distanza;
+{ 
+  if(isObsMoving)
+    res.dist = distanza;
+  else
+    res.dist = NAN;    
+
   return true;
 }
 
@@ -41,6 +46,8 @@ int main(int argc, char **argv)
   sync.registerCallback(boost::bind(&distance, _1, _2));
 
   ros::ServiceServer service = n.advertiseService("distance_calculator",&calculate);
+  ros::Rate loop_rate(10);
+
   ros::spin();
 
   return 0;
