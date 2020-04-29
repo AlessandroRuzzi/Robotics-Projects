@@ -4,6 +4,7 @@ converter::converter(std::string path,std::string pubTopic){
   timeCallBack = ros::Time::now();
   initParam(pubTopic);
   startPubAndSub(path);
+  timer = n.createTimer(ros::Duration(0.2), &converter::timerCallback, this);
   //checkIfMessageIsPublished();
 }
 
@@ -14,6 +15,11 @@ this->pubTopic = pubTopic;
   n.getParam("/h0", h0);
 }
 
+void converter::timerCallback(const ros::TimerEvent&){
+	//ROS_INFO("CALLBACK: %s", pubTopic.c_str());
+	publishNan();
+}
+
 void converter::startPubAndSub(std::string path){
   sub = n.subscribe(path, 1000, &converter::chatterCallback, this);
   pub_conv = n.advertise<nav_msgs::Odometry>(pubTopic, 1000);
@@ -21,6 +27,8 @@ void converter::startPubAndSub(std::string path){
 
 void converter::checkIfMessageIsPublished(){
   ros::Rate loop_rate(10);
+  
+  //timer = n.createTimer(ros::Duration(0.1), converter::callback, false);
 
   ros::Time lastCallBack = timeCallBack;
   while(ros::ok()){
@@ -38,9 +46,11 @@ void converter::chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg){
   //ROS_INFO("Input position: [%f,%f, %f]", msg->latitude, msg->longitude,msg->altitude);
 
   // fixed values
-
+  timer.stop();
   if(msg->latitude == 0 && msg->longitude == 0 && msg->altitude == 0){
     publishNan();
+    timer.start();
+    ROS_INFO("New timer");
     return;
 }
 
@@ -105,6 +115,7 @@ void converter::chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg){
   
   broadcastTf();
   publishOdom();
+  timer.start();
 
 }
 
@@ -114,7 +125,7 @@ void converter::broadcastTf(){
   tf::Quaternion q;
   q.setRPY(0, 0, 0);
   transform.setRotation(q);
-  br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "odom", pubTopic)); 
+  br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", pubTopic)); 
  
 }
 
@@ -147,7 +158,7 @@ void converter::publishNan(){
 int main(int argc, char **argv){
   	
   ros::init(argc, argv,"converter");
-
+  
   converter converter("/swiftnav/front/gps_pose",argv[1]);
 
   ros::spin();

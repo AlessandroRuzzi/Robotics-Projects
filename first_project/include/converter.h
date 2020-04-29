@@ -17,7 +17,8 @@ public:
        
 	void initParam(std::string pubTopic);
 	void startPubAndSub(std::string path);
-
+	void timerCallback(const ros::TimerEvent&);
+	
 private:
 
 	ros::NodeHandle n;
@@ -25,6 +26,7 @@ private:
   	ros::Subscriber sub;
 	ros::Publisher pub_conv;
 	ros::Time timeCallBack;
+	ros::Timer timer;
  	float latitude_init, longitude_init, h0;
   	float xEast, yNorth, zUp;
   	std::string pubTopic;
