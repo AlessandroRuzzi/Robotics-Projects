@@ -21,7 +21,11 @@ public:
 private:
 	ros::NodeHandle n;
 	ros::ServiceServer service;
-	float distance;
+	float distance = NAN;
+	message_filters::Subscriber<nav_msgs::Odometry> subFront;
+	message_filters::Subscriber<nav_msgs::Odometry> subObs;
+	typedef message_filters::sync_policies::ApproximateTime<nav_msgs::Odometry, nav_msgs::Odometry> syncPolicy;
+	message_filters::Synchronizer<syncPolicy> sync;
 	
 
 	void subscribeToNodes();

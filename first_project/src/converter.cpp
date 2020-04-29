@@ -148,7 +148,7 @@ int main(int argc, char **argv){
   	
   ros::init(argc, argv,"converter");
 
-  converter converter1("/swiftnav/front/gps_pose",argv[1]);
+  converter converter("/swiftnav/front/gps_pose",argv[1]);
 
   ros::spin();
 

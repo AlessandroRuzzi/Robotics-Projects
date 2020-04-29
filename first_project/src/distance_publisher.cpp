@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 {
    ros::init(argc, argv, "distance_publisher");
 
-   distance_publisher distance_publisher1;
+   distance_publisher distance_publisher;
 
    ros::spin();
  

@@ -47,7 +47,7 @@ target_link_libraries(distance_publisher ${catkin_LIBRARIES})
 
 
 add_executable(distance_calculator src/distance_calculator.cpp
-		)
+	       src/distance_calculator.cpp include/distance_calculator.h)
 add_dependencies(distance_calculator ${${PROJECT_NAME}_EXPORTE_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(distance_calculator ${PROJECT_NAME}_generate_messages_cpp )
 target_link_libraries(distance_calculator ${catkin_LIBRARIES})
