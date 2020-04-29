@@ -46,9 +46,8 @@ void distance_publisher::startPublishing(){
     else{
       ROS_INFO("Server Error");
     }
-
   loop_rate.sleep();
-  ros::spinOnce();  //vedere se si deve togliere
+  ros::spinOnce(); 
   }
 }
 

@@ -132,7 +132,7 @@ void converter::publishOdom(){
 }
 
 void converter::publishNan(){
-  nav_msgs::Odometry odom;
+  nav_msgs::Odometry odom;                   //togliere questo e spostarlo in publishOdom
   odom.header.stamp = ros::Time::now();
   odom.header.frame_id = "odom";
   odom.pose.pose.position.x = NAN;

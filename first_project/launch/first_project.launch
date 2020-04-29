@@ -18,8 +18,6 @@
  	<node pkg="first_project" name="distance_calculator" type="distance_calculator" output="screen"
 	/>
 
-	
-
 	<node pkg="first_project" name="distance_publisher" type="distance_publisher" output="screen"
 	/>
 
