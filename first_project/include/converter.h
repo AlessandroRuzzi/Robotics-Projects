@@ -33,8 +33,7 @@ private:
 
 	void checkIfMessageIsPublished();
 	void broadcastTf();
-	void publishOdom();
-	void publishNan();
+	void publishOdom(float x, float y, float z);
 };
 
 #endif

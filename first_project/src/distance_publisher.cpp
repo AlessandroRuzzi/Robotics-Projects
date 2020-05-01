@@ -7,7 +7,6 @@ distance_publisher::distance_publisher(){
   startPublishing();
 }
 
-
 void distance_publisher::startClient(){
   client = n.serviceClient<first_project::distance_calculate>("distance_calculator");
   distPub = n.advertise<first_project::dist>("distance", 1000);
@@ -40,7 +39,6 @@ void distance_publisher::startPublishing(){
         msg.flag = "Safe";
       else if(msg.dist >= minCrash && msg.dist <= minUnSafe)
         msg.flag = "Crash";
-     
       distPub.publish(msg);
     }
     else{

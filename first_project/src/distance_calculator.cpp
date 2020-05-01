@@ -24,7 +24,6 @@ void distance_calculator::calculateDistance(const nav_msgs::OdometryConstPtr& ms
   float y2 = msg2->pose.pose.position.y;
   float z2 = msg2->pose.pose.position.z;
   distance = sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)) + ((z1 - z2) * (z1 - z2)));
-
 }
 
 bool distance_calculator::serverCallBack(first_project::distance_calculate::Request &req, first_project::distance_calculate::Response &res){

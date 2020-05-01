@@ -5,19 +5,17 @@ converter::converter(std::string path,std::string pubTopic){
   initParam(pubTopic);
   startPubAndSub(path);
   timer = n.createTimer(ros::Duration(0.2), &converter::timerCallback, this);
-  //checkIfMessageIsPublished();
 }
 
 void converter::initParam(std::string pubTopic){
-this->pubTopic = pubTopic;
+  this->pubTopic = pubTopic;
   n.getParam("/longitude_init", longitude_init);
   n.getParam("/latitude_init", latitude_init);
   n.getParam("/h0", h0);
 }
 
 void converter::timerCallback(const ros::TimerEvent&){
-	//ROS_INFO("CALLBACK: %s", pubTopic.c_str());
-	publishNan();
+	publishOdom(NAN,NAN,NAN);
 }
 
 void converter::startPubAndSub(std::string path){
@@ -25,34 +23,13 @@ void converter::startPubAndSub(std::string path){
   pub_conv = n.advertise<nav_msgs::Odometry>(pubTopic, 1000);
 }
 
-void converter::checkIfMessageIsPublished(){
-  ros::Rate loop_rate(10);
-  
-  //timer = n.createTimer(ros::Duration(0.1), converter::callback, false);
-
-  ros::Time lastCallBack = timeCallBack;
-  while(ros::ok()){
-   
-   if(lastCallBack == timeCallBack)
-       publishNan();
-
-  lastCallBack = timeCallBack;
-  loop_rate.sleep();
-  ros::spinOnce();
-  }
-}
-
 void converter::chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg){
-  //ROS_INFO("Input position: [%f,%f, %f]", msg->latitude, msg->longitude,msg->altitude);
-
-  // fixed values
   timer.stop();
   if(msg->latitude == 0 && msg->longitude == 0 && msg->altitude == 0){
-    publishNan();
+    publishOdom(NAN,NAN,NAN);             
     timer.start();
-    ROS_INFO("New timer");
     return;
-}
+  }
 
   double a = 6378137;
   double b = 6356752.3142;
@@ -66,9 +43,7 @@ void converter::chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg){
   float h = msg->altitude;
 
   // fixed position
-  
-	
-
+ 
   //lla to ecef
   float lamb = deg_to_rad*(latitude);
   float phi = deg_to_rad*(longitude);
@@ -83,9 +58,6 @@ void converter::chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg){
   float  x = (h + N) * cos_lambda * cos_phi;
   float  y = (h + N) * cos_lambda * sin_phi;
   float  z = (h + (1 - e_sq) * N) * sin_lambda;
-  
-  //ROS_INFO("ECEF position: [%f,%f, %f]", x, y,z);
-  
 
   // ecef to enu
  
@@ -110,18 +82,16 @@ void converter::chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg){
   xEast = -sin_phi * xd + cos_phi * yd;
   yNorth = -cos_phi * sin_lambda * xd - sin_lambda * sin_phi * yd + cos_lambda * zd;
   zUp = cos_lambda * cos_phi * xd + cos_lambda * sin_phi * yd + sin_lambda * zd;
-
-  //ROS_INFO("ENU position: [%f,%f, %f]", xEast, yNorth, zUp);
   
   broadcastTf();
-  publishOdom();
+  publishOdom(xEast,yNorth,zUp);
   timer.start();
 
 }
 
 void converter::broadcastTf(){
   tf::Transform transform;
-  transform.setOrigin( tf::Vector3(xEast/100, yNorth/100, zUp/100) );
+  transform.setOrigin( tf::Vector3(xEast, yNorth, zUp) );
   tf::Quaternion q;
   q.setRPY(0, 0, 0);
   transform.setRotation(q);
@@ -129,30 +99,17 @@ void converter::broadcastTf(){
  
 }
 
-void converter::publishOdom(){
+void converter::publishOdom(float x,float y, float z){
   timeCallBack = ros::Time::now();
   nav_msgs::Odometry odom;
   odom.header.stamp = ros::Time::now();
   odom.header.frame_id = "odom";
-  odom.pose.pose.position.x = xEast;
-  odom.pose.pose.position.y = yNorth;
-  odom.pose.pose.position.z = zUp;
+  odom.pose.pose.position.x = x;
+  odom.pose.pose.position.y = y;
+  odom.pose.pose.position.z = z;
   odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(0);
 
   pub_conv.publish(odom);
-}
-
-void converter::publishNan(){
-  nav_msgs::Odometry odom;                   //togliere questo e spostarlo in publishOdom
-  odom.header.stamp = ros::Time::now();
-  odom.header.frame_id = "odom";
-  odom.pose.pose.position.x = NAN;
-  odom.pose.pose.position.y = NAN;
-  odom.pose.pose.position.z = NAN;
-  odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(0);
-
-  pub_conv.publish(odom);
-
 }
 
 int main(int argc, char **argv){
