@@ -103,7 +103,7 @@ void converter::publishOdom(float x,float y, float z){
   timeCallBack = ros::Time::now();
   nav_msgs::Odometry odom;
   odom.header.stamp = ros::Time::now();
-  odom.header.frame_id = "odom";
+  odom.header.frame_id = "world";
   odom.pose.pose.position.x = x;
   odom.pose.pose.position.y = y;
   odom.pose.pose.position.z = z;

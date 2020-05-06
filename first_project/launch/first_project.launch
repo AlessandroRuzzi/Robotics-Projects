@@ -1,8 +1,8 @@
 <launch> 
 
-	<param name="latitude_init" value="45.6311926152"/>
-	<param name="longitude_init" value="9.2947495255"/>
-	<param name="h0" value="231.506675163"/>
+	<param name="latitude_init" value="45.6216561271"/>
+	<param name="longitude_init" value="9.28155230131"/>
+	<param name="h0" value="224.616616895"/>
 	
         <param name="minSafe" value="5.0"/>
 	<param name="minUnSafe" value="1.0"/>
