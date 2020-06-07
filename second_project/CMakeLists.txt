@@ -10,7 +10,18 @@ project(second_project)
 find_package(catkin REQUIRED COMPONENTS
   move_base
   std_msgs
+  nav_msgs
 )
+
+
+## Declare a catkin package
+catkin_package()
+
+## Build talker and listener
+include_directories(include ${catkin_INCLUDE_DIRS})
+
+add_executable(odomPub src/odomPub.cpp)
+target_link_libraries(odomPub ${catkin_LIBRARIES})
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
