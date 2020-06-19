@@ -1,50 +1,42 @@
 <launch>
 
+    <!-- run tf transform -->
+    <node pkg="tf" type="static_transform_publisher" name="robot_transform" args="0 0 0 0 0 0 1 Robot_1/base_link base_link 100"/> 
+    <node pkg="tf" type="static_transform_publisher" name="robot_transform2" args="0 0 0 0 0 0 1 base_link os1_sensor 100"/> 
+    <node pkg="tf" type="static_transform_publisher" name="robot_transform1" args="0 0 0 0 0 0 1 odom world 100"/> 
+    <remap from="Robot_1/pose" to="odom"/>
+
     <!-- run pointcloud_to_laserscan node -->
     <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
 
         <remap from="cloud_in" to="/os1_cloud_node/points"/>
         <rosparam>
-            target_frame: "os1_lidar"
             transform_tolerance: 0.01
-            min_height: 0.0
-            max_height: 3.0
-
-            angle_min: -3.14 # -M_PI
-            angle_max: 3.14 # M_PI
-            angle_increment: 0.0087 # M_PI/360.0
             scan_time: 0.001
-            range_min: 0.01
+            range_min: 0.2
             range_max: 10.0
             use_inf: true
-
-            # Concurrency level, affects number of pointclouds queued for processing and number of threads used
-            # 0 : Detect number of cores
-            # 1 : Single threaded
-            # 2->inf : Parallelism level
             concurrency_level: 0
         </rosparam>
     </node>
 
-    <!-- run tf transform -->  
-    <node pkg="tf" type="static_transform_publisher" name="robot_transform" args="0 0 0 0 0 0 1 Robot_1/base_link os1_lidar 100"/> 
-    <node pkg="tf" type="static_transform_publisher" name="robot_transform1" args="0 0 0 0 0 0 1 Robot_1/pose world 100"/> 
+    
 
     <!-- run gmapping to create the map -->  
     <param name="use_sim_time" value="true" />
     <node pkg="gmapping" type="slam_gmapping" name="gmapping_node" output="screen" >
-      <param name="odom_frame" value="/Robot_1/pose" />
-      <param name="base_frame" value="Robot_1/base_link" />
+      <param name="odom_frame" value="odom" />
+      <param name="base_frame" value="base_link" />
       <param name="map_udpate_interval" value="0.001"/>
       <param name="maxUrange" value="10.0"/>
       <param name="sigma" value="0.1"/>
       <param name="kernelSize" value="1"/>
-      <param name="lstep" value="0.15"/>
-      <param name="astep" value="0.15"/>
-      <param name="iterations" value="5"/>
+      <param name="lstep" value="0.2"/>
+      <param name="astep" value="0.2"/>
+      <param name="iterations" value="15"/>
       <param name="lsigma" value="0.1"/>
       <param name="ogain" value="5.0"/>
-      <param name="lskip" value="4"/>
+      <param name="lskip" value="1"/>
       <param name="srr" value="0.1"/>
       <param name="srt" value="0.2"/>
       <param name="str" value="0.1"/>
@@ -58,11 +50,12 @@
       <param name="ymin" value="-30.0"/>
       <param name="xmax" value="30.0"/>
       <param name="ymax" value="30.0"/>
-      <param name="delta" value="0.09"/>
+      <param name="delta" value="0.06"/>
       <param name="llsamplerange" value="0.01"/>
       <param name="llsamplestep" value="0.05"/>
       <param name="lasamplerange" value="0.05"/>
       <param name="lasamplestep" value="0.05"/>
+
     </node>
     
 </launch>

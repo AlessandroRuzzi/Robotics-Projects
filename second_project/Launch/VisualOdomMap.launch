@@ -1,25 +1,25 @@
 <launch>
 
-    <node pkg="second_project" type="odomPub" name="odom_pub__node" output = "screen" /> 
     <!-- run tf transform -->
-    <node pkg="tf" type="static_transform_publisher" name="robot_transform" args="0.675 0.008 -0.96 0 0 0 1 camera_pose_frame os1_lidar 100"/> 
-    <node pkg="tf" type="static_transform_publisher" name="robot_transform1" args="0 0 0 0 0 0 1 /robot_pose_ekf_node/odom_combined camera_odom_frame 100"/>
-    <node pkg="tf" type="static_transform_publisher" name="robot_transform2" args="0 0 0 0 0 0 1 pixhawk_imu base_footprint 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="robot_transform" args="-0.675 -0.008 +0.96 0 0 0 1 base_link os1_sensor 100"/> 
 
     <!-- run imu node to have a better map -->
     <node pkg="imu_filter_madgwick" type="imu_filter_node"  name="imu_filter_madgwick_node" output="screen">  
         <remap from="/imu/data_raw" to="/mavros/imu/data_raw" />
         <remap from="imu/data" to="imu_data" />
         <param name="use_mag" value="false"/>
+        <param name="publish_tf" value="false"/>
         <param name="use_magnetic_field_msg" value="false"/>
         <param name="zeta" value="0.00"/>
         <param name="gain" value="0.02"/>  
     </node>
 
-    <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf_node" output = "screen">      
+    <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf_node" output = "screen">   
+      <remap from="vo" to="camera/odom/sample" />   
       <param name="output_frame" value="odom"/>
       <param name="freq" value="30.0"/>
       <param name="sensor_timeout" value="1.0"/>
+      <param name="base_footprint_frame" value="base_link"/>
       <param name="odom_used" value="true"/>
       <param name="imu_used" value="true"/>
       <param name="vo_used" value="true"/>
@@ -32,17 +32,11 @@
 
         <remap from="cloud_in" to="/os1_cloud_node/points"/>
         <rosparam>
-            target_frame: "os1_lidar"
             transform_tolerance: 0.01
             scan_time: 0.001
             range_min: 0.2
             range_max: 10.0
             use_inf: true
-
-            # Concurrency level, affects number of pointclouds queued for processing and number of threads used
-            # 0 : Detect number of cores
-            # 1 : Single threaded
-            # 2->inf : Parallelism level
             concurrency_level: 0
         </rosparam>
     </node>
@@ -52,18 +46,18 @@
     <!-- run gmapping to create the map -->  
     <param name="use_sim_time" value="true" />
     <node pkg="gmapping" type="slam_gmapping" name="gmapping_node" output="screen" >
-      <param name="odom_frame" value="/robot_pose_ekf_node/odom_combined" />
-      <param name="base_frame" value="camera_pose_frame" />
+      <param name="odom_frame" value="odom" />
+      <param name="base_frame" value="base_link" />
       <param name="map_udpate_interval" value="0.001"/>
       <param name="maxUrange" value="10.0"/>
       <param name="sigma" value="0.1"/>
       <param name="kernelSize" value="1"/>
       <param name="lstep" value="0.2"/>
       <param name="astep" value="0.2"/>
-      <param name="iterations" value="5"/>
+      <param name="iterations" value="15"/>
       <param name="lsigma" value="0.1"/>
-      <param name="ogain" value="9.0"/>
-      <param name="lskip" value="4"/>
+      <param name="ogain" value="5.0"/>
+      <param name="lskip" value="1"/>
       <param name="srr" value="0.1"/>
       <param name="srt" value="0.2"/>
       <param name="str" value="0.1"/>
@@ -77,7 +71,7 @@
       <param name="ymin" value="-30.0"/>
       <param name="xmax" value="30.0"/>
       <param name="ymax" value="30.0"/>
-      <param name="delta" value="0.07"/>
+      <param name="delta" value="0.06"/>
       <param name="llsamplerange" value="0.01"/>
       <param name="llsamplestep" value="0.05"/>
       <param name="lasamplerange" value="0.05"/>
