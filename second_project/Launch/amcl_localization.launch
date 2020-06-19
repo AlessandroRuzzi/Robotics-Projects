@@ -3,8 +3,8 @@
 
   
     <!-- run tf transform -->
-    <node pkg="tf" type="static_transform_publisher" name="robot_transform2" args="0 0 0 0 0 0 1 map odom 100"/>
-    <node pkg="tf" type="static_transform_publisher" name="robot_transform" args="-0.675 -0.008 +0.96 0 0 0 1 base_link os1_sensor 100"/> 
+    <node pkg="tf" type="static_transform_publisher" name="map_transform" args="0 0 0 0 0 0 1 map odom 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="sensor_transform" args="-0.675 -0.008 +0.96 0 0 0 1 base_link os1_sensor 100"/> 
 
     <!-- run imu node to have a better map -->
     <node pkg="imu_filter_madgwick" type="imu_filter_node"  name="imu_filter_madgwick_node" output="screen">  
@@ -46,7 +46,7 @@
 
 
   <arg name="base"       default="kobuki"/>  <!-- create_circles_asus_xtion_pro create_circles_kinect kobuki_hexagons_astra kobuki_hexagons_asus_xtion_pro kobuki_hexagons_asus_xtion_pro 
-kobuki_hexagons_kinect kobuki_hexagons_r200 roomba_circles_asus_xtion_pro roomba_circles_kinect -->
+    kobuki_hexagons_kinect kobuki_hexagons_r200 roomba_circles_asus_xtion_pro roomba_circles_kinect -->
   <arg name="stacks"     default="hexagons"/>  
   <arg name="3d_sensor"  default="astra"/>  
 
@@ -89,4 +89,5 @@ kobuki_hexagons_kinect kobuki_hexagons_r200 roomba_circles_asus_xtion_pro roomba
 
   <!--  **************** Visualisation ****************  -->
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find second_project)/rviz/robot_navigation.rviz"/>
+
 </launch>

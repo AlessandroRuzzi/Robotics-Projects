@@ -1,7 +1,7 @@
 <launch>
 
     <!-- run tf transform -->
-    <node pkg="tf" type="static_transform_publisher" name="robot_transform" args="-0.675 -0.008 +0.96 0 0 0 1 base_link os1_sensor 100"/> 
+    <node pkg="tf" type="static_transform_publisher" name="sensor_transform" args="-0.675 -0.008 +0.96 0 0 0 1 base_link os1_sensor 100"/> 
 
     <!-- run imu node to have a better map -->
     <node pkg="imu_filter_madgwick" type="imu_filter_node"  name="imu_filter_madgwick_node" output="screen">  
@@ -41,11 +41,10 @@
         </rosparam>
     </node>
 
-    
-
+   
     <!-- run gmapping to create the map -->  
     <param name="use_sim_time" value="true" />
-    <node pkg="gmapping" type="slam_gmapping" name="gmapping_node" output="screen" >
+    <node pkg="gmapping" type="slam_gmapping" name="gmapping_node_vo" output="screen" >
       <param name="odom_frame" value="odom" />
       <param name="base_frame" value="base_link" />
       <param name="map_udpate_interval" value="0.001"/>
