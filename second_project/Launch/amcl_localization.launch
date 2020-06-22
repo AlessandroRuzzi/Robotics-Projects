@@ -3,8 +3,10 @@
 
   
     <!-- run tf transform -->
-    <node pkg="tf" type="static_transform_publisher" name="map_transform" args="0 0 0 0 0 0 1 map odom 100"/>
-    <node pkg="tf" type="static_transform_publisher" name="sensor_transform" args="-0.675 -0.008 +0.96 0 0 0 1 base_link os1_sensor 100"/> 
+    <node pkg="tf2_ros" type="static_transform_publisher" name="map_transform" args="0 0 0 0 0 0 map odom"/>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="map_transform1" args="0 0 0 0 0 0 odom camera_odom_frame"/>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="sensor_transform" args="-0.675 -0.008 +0.96 0 0 0 base_link os1_sensor"/> 
+    <node pkg="tf2_ros" type="static_transform_publisher" name="robot_transform5" args="0 0 0 0 0 0 os1_sensor os1_lidar"/>
 
     <!-- run imu node to have a better map -->
     <node pkg="imu_filter_madgwick" type="imu_filter_node"  name="imu_filter_madgwick_node" output="screen">  
@@ -43,7 +45,12 @@
             concurrency_level: 0
         </rosparam>
     </node>
-  
+
+
+  <arg name="base"       default="kobuki"/>  <!-- create_circles_asus_xtion_pro create_circles_kinect kobuki_hexagons_astra kobuki_hexagons_asus_xtion_pro kobuki_hexagons_asus_xtion_pro 
+    kobuki_hexagons_kinect kobuki_hexagons_r200 roomba_circles_asus_xtion_pro roomba_circles_kinect -->
+  <arg name="stacks"     default="hexagons"/>  
+  <arg name="3d_sensor"  default="astra"/>  
 
   <!-- Name of the map to use and initial position -->                                                            
   <arg name="map_file"       default="$(find second_project)/Maps/map8.yaml"/>
