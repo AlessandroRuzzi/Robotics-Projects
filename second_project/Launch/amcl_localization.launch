@@ -43,12 +43,7 @@
             concurrency_level: 0
         </rosparam>
     </node>
-
-
-  <arg name="base"       default="kobuki"/>  <!-- create_circles_asus_xtion_pro create_circles_kinect kobuki_hexagons_astra kobuki_hexagons_asus_xtion_pro kobuki_hexagons_asus_xtion_pro 
-    kobuki_hexagons_kinect kobuki_hexagons_r200 roomba_circles_asus_xtion_pro roomba_circles_kinect -->
-  <arg name="stacks"     default="hexagons"/>  
-  <arg name="3d_sensor"  default="astra"/>  
+  
 
   <!-- Name of the map to use and initial position -->                                                            
   <arg name="map_file"       default="$(find second_project)/Maps/map8.yaml"/>
@@ -61,15 +56,6 @@
 
   <param name="/use_sim_time" value="true"/>
 
-  <!--  ***************** Robot Model *****************  -->                                
-  <include file="$(find turtlebot_bringup)/launch/includes/robot.launch.xml">
-    <arg name="base" value="$(arg base)" />
-    <arg name="stacks" value="$(arg stacks)" />
-    <arg name="3d_sensor" value="$(arg 3d_sensor)" />
-  </include>
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <param name="use_gui" value="false"/>
-  </node>
 
   <!--  ****** Maps *****  -->
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">               

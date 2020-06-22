@@ -4,7 +4,6 @@
     <node pkg="tf2_ros" type="static_transform_publisher" name="robot_transform" args="0 0 0 0 0 0 Robot_1/base_link base_link"/> 
     <node pkg="tf2_ros" type="static_transform_publisher" name="robot_transform2" args="0 0 0 3.14 0 0 base_link os1_sensor"/> 
     <node pkg="tf2_ros" type="static_transform_publisher" name="robot_transform1" args="0 0 0 0 0 0 odom world"/> 
-    <node pkg="tf2_ros" type="static_transform_publisher" name="robot_transform3" args="0 0 0 0 0 0 odom camera_odom_frame"/>
     <node pkg="tf2_ros" type="static_transform_publisher" name="robot_transform5" args="0 0 0 0 0 0 os1_sensor os1_lidar"/>
 
     <!-- run pointcloud_to_laserscan node -->
