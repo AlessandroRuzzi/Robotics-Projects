@@ -1,14 +1,14 @@
 <launch>
 
     <!-- run tf transform -->
-    <node pkg="tf2_ros" type="static_transform_publisher" name="robot_transform" args="0 0 0 0 0 0 Robot_1/base_link base_link"/> 
-    <node pkg="tf2_ros" type="static_transform_publisher" name="robot_transform2" args="0 0 0 3.14 0 0 base_link os1_sensor"/> 
-    <node pkg="tf2_ros" type="static_transform_publisher" name="robot_transform1" args="0 0 0 0 0 0 odom world"/> 
-    <node pkg="tf2_ros" type="static_transform_publisher" name="robot_transform5" args="0 0 0 0 0 0 os1_sensor os1_lidar"/>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="base_transform" args="0 0 0 0 0 0 Robot_1/base_link base_link"/> 
+    <node pkg="tf2_ros" type="static_transform_publisher" name="sensor_transform" args="0 0 0 3.14 0 0 base_link os1_sensor"/> 
+    <node pkg="tf2_ros" type="static_transform_publisher" name="odom_transform" args="0 0 0 0 0 0 odom world"/> 
+    <node pkg="tf2_ros" type="static_transform_publisher" name="lidar_transform" args="0 0 0 0 0 0 os1_sensor os1_lidar"/>
+
 
     <!-- run pointcloud_to_laserscan node -->
     <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
-
         <remap from="cloud_in" to="/os1_cloud_node/points"/>
         <rosparam>
             transform_tolerance: 0.01
@@ -20,16 +20,15 @@
         </rosparam>
     </node>
 
-    
 
     <!-- run gmapping to create the map -->  
     <param name="use_sim_time" value="true" />
-    <node pkg="gmapping" type="slam_gmapping" name="gmapping_node" output="screen" >
+    <node pkg="gmapping" type="slam_gmapping" name="gmapping_node_optitrack" output="screen" >
       <param name="odom_frame" value="odom" />
       <param name="base_frame" value="base_link" />
       <param name="map_udpate_interval" value="0.001"/>
       <param name="maxUrange" value="10.0"/>
-      <param name="sigma" value="0.1"/>
+      <param name="sigma" value="0.02"/>
       <param name="kernelSize" value="1"/>
       <param name="lstep" value="0.2"/>
       <param name="astep" value="0.2"/>
@@ -55,7 +54,6 @@
       <param name="llsamplestep" value="0.05"/>
       <param name="lasamplerange" value="0.05"/>
       <param name="lasamplestep" value="0.05"/>
-
     </node>
     
 </launch>

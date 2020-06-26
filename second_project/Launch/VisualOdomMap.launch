@@ -1,7 +1,9 @@
 <launch>
 
-    <!-- run tf transform -->
-    <node pkg="tf" type="static_transform_publisher" name="sensor_transform" args="-0.675 -0.008 +0.96 0 0 0 1 base_link os1_sensor 100"/> 
+    <!-- run tf tree transform -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="sensor_transform" args="-0.675 -0.008 +0.96 0 0 0 base_link os1_sensor"/> 
+    <node pkg="tf2_ros" type="static_transform_publisher" name="odom_transform" args="0 0 0 0 0 0 odom camera_odom_frame"/> 
+
 
     <!-- run imu node to have a better map -->
     <node pkg="imu_filter_madgwick" type="imu_filter_node"  name="imu_filter_madgwick_node" output="screen">  
@@ -13,6 +15,7 @@
         <param name="zeta" value="0.00"/>
         <param name="gain" value="0.02"/>  
     </node>
+
 
     <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf_node" output = "screen">   
       <remap from="vo" to="camera/odom/sample" />   
@@ -27,9 +30,9 @@
       <param name="self_diagnose" value="false"/>
     </node>
 
+
     <!-- run pointcloud_to_laserscan node -->
     <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
-
         <remap from="cloud_in" to="/os1_cloud_node/points"/>
         <rosparam>
             transform_tolerance: 0.01
@@ -49,7 +52,7 @@
       <param name="base_frame" value="base_link" />
       <param name="map_udpate_interval" value="0.001"/>
       <param name="maxUrange" value="10.0"/>
-      <param name="sigma" value="0.1"/>
+      <param name="sigma" value="0.02"/>
       <param name="kernelSize" value="1"/>
       <param name="lstep" value="0.2"/>
       <param name="astep" value="0.2"/>
@@ -75,7 +78,6 @@
       <param name="llsamplestep" value="0.05"/>
       <param name="lasamplerange" value="0.05"/>
       <param name="lasamplestep" value="0.05"/>
-
     </node>
     
 </launch>

@@ -1,4 +1,4 @@
-image: map8.pgm
+image: VisualOdomMap.pgm
 resolution: 0.060000
 origin: [-30.000000, -30.000000, 0.000000]
 negate: 0
