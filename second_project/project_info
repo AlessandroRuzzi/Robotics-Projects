@@ -1,0 +1,39 @@
+Team:
+10579852 - Piantoni Edoardo
+10421795 - Scibona Luigi
+10620694 - Ruzzi Alessandro
+
+FILE DESCRIPTION:
+- flag.cfg: cfg file that perform the dynamic reconfiguration of SAFE & CRASH values
+- first_project.launch: launcher file that lauch the project, creating nodes and setting default values
+- dist.msg: custom message that publish the distance between the car and the obstacle and also the Safe, Unsafe, Crash flags
+- converter.cpp: file that convert the measurement from lla to ENU, and publish "nan" when GPS signal is lost
+- distance_calculator.cpp: file that compute the distance between the car and the obstacle
+- distance_publisher.cpp: file that publish the distance and depending on its value publish the Safe, Unsafe or Crash flag
+
+NAME OF PARAMETERS:
+- latitude_init (45.6216561271)
+- longitude_init (9.28155230131)
+- h0 (224.616616895)
+- minSafe
+- minUnSafe
+- minCrash
+
+TF TREE:
+- Root frame: world
+- Car frame: front
+- Obstacle frame: obs
+
+CUSTOM MESSAGE:
+- Header header: publish sequence number, time (secs & nsecs), frame_id
+- float64 dist: the distance between the car and the obstacle
+- String flag: the relative flag of the distance ("Safe", "Unsafe", "Crash")
+
+DESCRIPTION OF HOW TO START/USE THE NODES:
+First you have to play the project.bag. Then, you can start the project using the first_project.launch file (inside the directory "launch").
+To observe what the distance_publisher publish, you have to run "rostopic echo /distance" and you can see the custom message with the header info, the distance and the "Safe", "Unsafe", "Crash" flag.
+
+ADDITIONAL INFO:
+- The map used for the localization task has to be called "VisualOdomMap"
+- We have done the additional part using imu data to improve mapping and localization
+

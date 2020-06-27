@@ -34,7 +34,6 @@
 
     <!-- run pointcloud_to_laserscan node -->
     <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
-
         <remap from="cloud_in" to="/os1_cloud_node/points"/>
         <rosparam>
             transform_tolerance: 0.01

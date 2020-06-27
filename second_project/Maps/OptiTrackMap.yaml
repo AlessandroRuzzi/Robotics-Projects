@@ -1,4 +1,4 @@
-image: VisualOdomMap.pgm
+image: OptiTrackMap.pgm
 resolution: 0.050000
 origin: [-30.000000, -30.000000, 0.000000]
 negate: 0
