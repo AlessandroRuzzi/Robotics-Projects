@@ -4,36 +4,31 @@ Team:
 10620694 - Ruzzi Alessandro
 
 FILE DESCRIPTION:
-- flag.cfg: cfg file that perform the dynamic reconfiguration of SAFE & CRASH values
-- first_project.launch: launcher file that lauch the project, creating nodes and setting default values
-- dist.msg: custom message that publish the distance between the car and the obstacle and also the Safe, Unsafe, Crash flags
-- converter.cpp: file that convert the measurement from lla to ENU, and publish "nan" when GPS signal is lost
-- distance_calculator.cpp: file that compute the distance between the car and the obstacle
-- distance_publisher.cpp: file that publish the distance and depending on its value publish the Safe, Unsafe or Crash flag
-
-NAME OF PARAMETERS:
-- latitude_init (45.6216561271)
-- longitude_init (9.28155230131)
-- h0 (224.616616895)
-- minSafe
-- minUnSafe
-- minCrash
+- OptitrackMap.launch: launcher file to create the map using the optitrack data.
+- VisualOdomMap.launch: launcher file to create the map using the Visual Odometrt data fused with IMU data.
+- amcl_localization.launch: launcher file to compute and show the localization task on rviz.
+- amcl.launch.xml: xml file containing all the parameters to properly configure amcl node.
+- Maps package: package containing the two maps created with optitrack data and visual odometry data.
+- Rviz package: package containing configuration file to start Rviz with amcl
 
 TF TREE:
-- Root frame: world
-- Car frame: front
-- Obstacle frame: obs
+- Optitrack launch-> used frame world and robot_1/baselink, published a transform between odom and world, and between baselink and os1_sensor with yaw offset of 3.14(published also others useful transform)
+- VisualOdom launch-> used improved odom published by robot_pose_ekf and baselink, published a transoform between baselink and os1_sensor [-0.675 -0.008 +0.96], and between os1_sensor and os1_lidar
+- AMCL launch-> used the same tf-tree of visualOdom launch, adding a transform between map and odom
 
-CUSTOM MESSAGE:
-- Header header: publish sequence number, time (secs & nsecs), frame_id
-- float64 dist: the distance between the car and the obstacle
-- String flag: the relative flag of the distance ("Safe", "Unsafe", "Crash")
+NAME OF BAG:
+- Map Creation -> 2020-05-14-16-09-36-traj1-os1-t265-pix.bag 
+- Localizition -> 2020-05-14-16-14-37-traj2-os1-t265-pix.bag
 
 DESCRIPTION OF HOW TO START/USE THE NODES:
-First you have to play the project.bag. Then, you can start the project using the first_project.launch file (inside the directory "launch").
-To observe what the distance_publisher publish, you have to run "rostopic echo /distance" and you can see the custom message with the header info, the distance and the "Safe", "Unsafe", "Crash" flag.
+1)First you have to start the OptitrackMap.launch and then play the traj1 bag , then stop the bag at 75/270, and use the map_server map_saver to save the map.
+2)Second you have to start the VisualOdomMap.launch and then play the traj1 bag again , then wait for the bag to end, and use the map_server map_saver to save the map.
+3)Finally you have to play the amcl_localization.launch, rviz will open on its own and it will show the particle(that estimate the robot position) moving on the map.
 
 ADDITIONAL INFO:
-- The map used for the localization task has to be called "VisualOdomMap"
-- We have done the additional part using imu data to improve mapping and localization
+- The map used for the localization task (amcl) has to be called "VisualOdomMap".
+- We have done the additional part using imu data to improve mapping and localization.
+- The bag traj1 used for mapping doesn't reach the end (241/270).
+- The OptiTrack map has been created by stopping the bag at (75/270).
+- One of the member will graduate in July.
 
