@@ -5,8 +5,8 @@ Team:
 
 FILE DESCRIPTION:
 - OptitrackMap.launch: launcher file to create the map using the optitrack data.
-- VisualOdomMap.launch: launcher file to create the map using the Visual Odometrt data fused with IMU data.
-- amcl_localization.launch: launcher file to compute and show the localization task on rviz.
+- VisualOdomMap.launch: launcher file to create the map using the Visual Odometry data fused with IMU data.
+- amcl_localization.launch: launcher file to compute and show the localization task on Rviz.
 - amcl.launch.xml: xml file containing all the parameters to properly configure amcl node.
 - Maps package: package containing the two maps created with optitrack data and visual odometry data.
 - Rviz package: package containing configuration file to start Rviz with amcl
@@ -18,7 +18,7 @@ TF TREE:
 
 NAME OF BAG:
 - Map Creation -> 2020-05-14-16-09-36-traj1-os1-t265-pix.bag 
-- Localizition -> 2020-05-14-16-14-37-traj2-os1-t265-pix.bag
+- Localization -> 2020-05-14-16-14-37-traj2-os1-t265-pix.bag
 
 DESCRIPTION OF HOW TO START/USE THE NODES:
 1)First you have to start the OptitrackMap.launch and then play the traj1 bag , then stop the bag at 75/270, and use the map_server map_saver to save the map.
